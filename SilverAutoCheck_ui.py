@@ -4,6 +4,8 @@ import time
 from datetime import datetime, timedelta
 import os
 import re
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.service import Service
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -145,7 +147,7 @@ class NSEOptionChainStreamlit:
         for key, value in defaults.items():
             if key not in st.session_state:
                 st.session_state[key] = value
-    
+
     def setup_driver_once(self):
         """Setup Chrome WebDriver only once and reuse it"""
         with self.driver_lock:
@@ -167,18 +169,25 @@ class NSEOptionChainStreamlit:
             chrome_options.add_argument("--silent")
             chrome_options.add_argument("--disable-extensions")
             chrome_options.add_argument("--disable-plugins")
-            chrome_options.add_argument("--disable-images")
             chrome_options.add_argument("--window-size=1920,1080")
             
             try:
-                self.driver = webdriver.Chrome(options=chrome_options)
-                self.driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
-                self.wait = WebDriverWait(self.driver, self.wait_timeout)
-                st.session_state.driver_initialized = True
-                return True
-            except Exception as e:
-                st.error(f"Failed to setup WebDriver: {e}")
-                return False
+                # Try using webdriver-manager for automatic driver management
+                service = Service(ChromeDriverManager().install())
+                self.driver = webdriver.Chrome(service=service, options=chrome_options)
+            except:
+                # Fallback to system chromedriver
+                try:
+                    self.driver = webdriver.Chrome(options=chrome_options)
+                except Exception as e:
+                    st.error(f"Failed to setup WebDriver: {e}")
+                    return False
+            
+            self.driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
+            self.wait = WebDriverWait(self.driver, self.wait_timeout)
+            st.session_state.driver_initialized = True
+            return True
+    
     
     def close_driver(self):
         """Close the WebDriver if it exists"""
