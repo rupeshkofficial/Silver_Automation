@@ -1,15 +1,5 @@
-# Core dependencies (stable versions that compile on most systems)
-streamlit==1.28.0
-pandas==1.5.3
-selenium==4.15.0
-
-# Visualization
-plotly==5.15.0
-
-# Timezone support
-pytz==2023.3
-
-# Build dependencies (helps with compilation issues)
-numpy==1.24.3
-setuptools==68.0.0
-wheel==0.40.0
+streamlit==1.28.1
+pandas==2.0.3
+selenium==4.14.1
+plotly==5.17.0
+pytz==2023.3.post1
