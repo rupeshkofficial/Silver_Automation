@@ -1,6 +1,5 @@
 streamlit==1.28.1
 pandas==2.0.3
-selenium==4.14.1
+selenium==4.15.2
 plotly==5.17.0
 pytz==2023.3.post1
-webdriver-manager==4.0.1
