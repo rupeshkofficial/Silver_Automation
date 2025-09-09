@@ -148,47 +148,32 @@ class NSEOptionChainStreamlit:
             if key not in st.session_state:
                 st.session_state[key] = value
 
+
     def setup_driver_once(self):
-        """Setup Chrome WebDriver only once and reuse it"""
+        """Setup Chrome WebDriver using webdriver-manager"""
         with self.driver_lock:
             if st.session_state.driver_initialized and self.driver:
                 return True
                 
             chrome_options = Options()
             chrome_options.add_argument("--headless=new")
-            chrome_options.add_argument("--disable-blink-features=AutomationControlled")
-            chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
-            chrome_options.add_experimental_option('useAutomationExtension', False)
-            chrome_options.add_argument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
             chrome_options.add_argument("--no-sandbox")
             chrome_options.add_argument("--disable-dev-shm-usage")
             chrome_options.add_argument("--disable-gpu")
-            chrome_options.add_argument("--disable-web-security")
-            chrome_options.add_argument("--disable-logging")
-            chrome_options.add_argument("--log-level=3")
-            chrome_options.add_argument("--silent")
-            chrome_options.add_argument("--disable-extensions")
-            chrome_options.add_argument("--disable-plugins")
             chrome_options.add_argument("--window-size=1920,1080")
+            chrome_options.add_argument("--remote-debugging-port=9222")
             
             try:
-                # Try using webdriver-manager for automatic driver management
+                # Use webdriver-manager to automatically handle ChromeDriver
                 service = Service(ChromeDriverManager().install())
                 self.driver = webdriver.Chrome(service=service, options=chrome_options)
-            except:
-                # Fallback to system chromedriver
-                try:
-                    self.driver = webdriver.Chrome(options=chrome_options)
-                except Exception as e:
-                    st.error(f"Failed to setup WebDriver: {e}")
-                    return False
-            
-            self.driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
-            self.wait = WebDriverWait(self.driver, self.wait_timeout)
-            st.session_state.driver_initialized = True
-            return True
-    
-    
+                self.wait = WebDriverWait(self.driver, self.wait_timeout)
+                st.session_state.driver_initialized = True
+                return True
+            except Exception as e:
+                st.error(f"WebDriver setup failed: {e}")
+                return False
+                
     def close_driver(self):
         """Close the WebDriver if it exists"""
         with self.driver_lock:
