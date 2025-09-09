@@ -1,4 +1,13 @@
-streamlit
-pandas
-selenium
-plotly
+# Core dependencies (pinned versions for stability)
+streamlit==1.28.0
+pandas==2.0.3
+selenium==4.15.0
+
+# Visualization (lighter version)
+plotly==5.17.0
+
+# Timezone support
+pytz==2023.3
+
+# Optional: For better performance
+cachetools==5.3.2
