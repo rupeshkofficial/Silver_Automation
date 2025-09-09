@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: silver-option-monitor
+    env: python
+    buildCommand: "./build.sh"
+    startCommand: "./start.sh"
+    plan: starter
+    healthCheckPath: /_stcore/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.9.18
+      - key: STREAMLIT_SERVER_HEADLESS
+        value: true
+      - key: STREAMLIT_BROWSER_GATHER_USAGE_STATS
+        value: false
+      - key: STREAMLIT_SERVER_ENABLE_CORS
+        value: false
+      - key: CHROME_BIN
+        value: /usr/bin/google-chrome-stable
+      - key: CHROMEDRIVER_PATH
+        value: /usr/local/bin/chromedriver
+      - key: DISPLAY
+        value: ":99"
